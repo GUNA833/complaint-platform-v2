@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Complaint Registration</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Register Complaint</h1>
+  <form id="complaintForm">
+    <input type="text" placeholder="Name" id="name" required /><br>
+    <input type="email" placeholder="Email" id="email" required /><br>
+    <input type="tel" placeholder="Phone Number" id="phone" required /><br>
+    <input type="text" placeholder="Complaint Title" id="complaint" required /><br>
+    <textarea placeholder="Description" id="description" required></textarea><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <h2>Check Complaint Status</h2>
+  <input type="text" id="statusId" placeholder="Enter Complaint ID" />
+  <button onclick="checkStatus()">Check Status</button>
+  <p id="statusResult"></p>
+
+  <script>
+    document.getElementById('complaintForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const response = await fetch('http://localhost:6000/api/complaints', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+          complaint: document.getElementById('complaint').value,
+          description: document.getElementById('description').value
+        })
+      });
+      const data = await response.json();
+      alert('Complaint Registered. Your ID: ' + data._id);
+    });
+
+    async function checkStatus() {
+      const id = document.getElementById('statusId').value;
+      const res = await fetch('http://localhost:6000/api/complaints/' + id + '/status');
+      const data = await res.json();
+      document.getElementById('statusResult').innerText = "Status: " + data.status;
+    }
+  </script>
+</body>
+</html>
